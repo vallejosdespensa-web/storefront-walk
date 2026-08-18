@@ -205,7 +205,11 @@ export function useThumbArc({
     lastProjRef.current = proj;
   }, []);
 
-  const endDrag = useCallback(() => {
+  const endDrag = useCallback((e?: React.PointerEvent) => {
+    if (e) {
+      const el = e.currentTarget as HTMLElement | null;
+      if (el?.hasPointerCapture?.(e.pointerId)) el.releasePointerCapture(e.pointerId);
+    }
     if (!draggingRef.current) return;
     draggingRef.current = false;
     setIsDragging(false);
