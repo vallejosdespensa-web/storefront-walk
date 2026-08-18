@@ -35,7 +35,7 @@ export const useNavigation = create<NavigationState>((set, get) => ({
       return;
     }
     if (level === "brands") {
-      set({ level: "aisle", brandId: null });
+      set({ level: "aisle", brandId: null, path: path.slice(0, -1), activeIndex: 0 });
       return;
     }
     if (level === "aisle") {
