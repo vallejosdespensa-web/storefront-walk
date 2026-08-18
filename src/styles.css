@@ -142,3 +142,90 @@
     color: var(--color-foreground);
   }
 }
+
+/* ---- Escena: tokens sobrios y neutros ---- */
+:root {
+  --scene-bg: oklch(0.16 0.008 260);
+  --scene-panel: oklch(0.22 0.008 260);
+  --scene-line: oklch(0.32 0.008 260);
+  --scene-text: oklch(0.95 0.004 260);
+  --scene-dim: oklch(0.66 0.008 260);
+  --scene-glow: 0 0 0 1px oklch(0.85 0.02 260 / 0.22), 0 0 18px 2px oklch(0.9 0.02 260 / 0.28);
+  --ease-camera: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-elastic: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@theme inline {
+  --color-scene: var(--scene-bg);
+  --color-panel: var(--scene-panel);
+  --color-line: var(--scene-line);
+  --color-scene-fg: var(--scene-text);
+  --color-scene-dim: var(--scene-dim);
+}
+
+@utility glow-active {
+  box-shadow: var(--scene-glow);
+}
+
+@utility press {
+  transition: transform 80ms ease-out, opacity 80ms ease-out;
+  &:active {
+    transform: scale(0.96);
+    opacity: 0.9;
+  }
+}
+
+@utility tap-44 {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+@utility eye-mask {
+  mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 18%, black 82%, transparent);
+}
+
+@keyframes scene-fade {
+  from { opacity: 0 }
+  to { opacity: 1 }
+}
+@keyframes chevron-beat {
+  0%, 100% { transform: translateY(0); opacity: 0.5 }
+  50% { transform: translateY(6px); opacity: 1 }
+}
+@keyframes zoom-pulse-in {
+  0% { transform: scale(1) }
+  45% { transform: scale(1.1) }
+  100% { transform: scale(1) }
+}
+@keyframes zoom-pulse-out {
+  0% { transform: scale(1) }
+  45% { transform: scale(0.9) }
+  100% { transform: scale(1) }
+}
+@keyframes arc-trace {
+  0% { stroke-dashoffset: 200; opacity: 0 }
+  20% { opacity: 1 }
+  80% { opacity: 1 }
+  100% { stroke-dashoffset: 0; opacity: 0 }
+}
+@keyframes cart-drop {
+  0% { transform: translateY(120%) }
+  16% { transform: translateY(0) }
+  70% { transform: translateY(0) }
+  100% { transform: translateY(120%) }
+}
+
+.crossfade {
+  animation: scene-fade 120ms linear;
+}
+.pulse-in {
+  animation: zoom-pulse-in 300ms var(--ease-camera);
+}
+.pulse-out {
+  animation: zoom-pulse-out 300ms var(--ease-camera);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-in, .pulse-out { animation: scene-fade 120ms linear }
+}
