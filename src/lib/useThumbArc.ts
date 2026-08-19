@@ -332,5 +332,5 @@ export function useThumbArc({
     style: { touchAction: "none" as const },
   };
 
-  return { offsetRef, indexRef, isDragging, bind, scrollToIndex, onIndexChange };
+  return { offsetRef, indexRef, isDragging, bind, scrollToIndex, onIndexChange, paint: emit };
 }

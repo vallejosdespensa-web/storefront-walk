@@ -35,7 +35,6 @@ export function Aisle({
 
   useEffect(() => {
     setActive(0);
-    cardsRef.current.clear();
   }, [node.id]);
 
   const onFrame = useCallback((offset: number) => {
@@ -51,7 +50,7 @@ export function Aisle({
     });
   }, []);
 
-  const { bind, scrollToIndex } = useThumbArc({
+  const { bind, scrollToIndex, paint } = useThumbArc({
     count: children.length,
     step: STEP,
     axis: { x: -0.3, y: 1 },
