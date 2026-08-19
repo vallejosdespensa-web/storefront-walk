@@ -44,7 +44,10 @@ export function Aisle({
       const ap = Math.abs(pos);
       el.style.transform = `translate3d(${pos * 0.16}px, ${pos}px, ${-ap * 1.15}px) rotateY(${16 - pos * 0.028}deg)`;
       el.style.opacity = `${Math.max(0, 1 - ap / 560)}`;
+      el.style.zIndex = `${1000 - Math.round(ap)}`;
+      el.style.pointerEvents = ap > 300 ? "none" : "auto";
       el.style.filter = ap > 120 ? `blur(${Math.min(3.5, (ap - 120) / 90)}px)` : "none";
+
     });
   }, []);
 
