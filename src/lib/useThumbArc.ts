@@ -164,6 +164,35 @@ export function useThumbArc({
     return dx * ux + dy * uy;
   };
 
+  const winHandlersRef = useRef<null | {
+    move: (e: PointerEvent) => void;
+    up: (e: PointerEvent) => void;
+  }>(null);
+
+  const detachWindow = useCallback(() => {
+    const h = winHandlersRef.current;
+    if (!h) return;
+    winHandlersRef.current = null;
+    window.removeEventListener("pointermove", h.move);
+    window.removeEventListener("pointerup", h.up);
+    window.removeEventListener("pointercancel", h.up);
+  }, []);
+
+  const attachWindow = useCallback(() => {
+    detachWindow();
+    const h = {
+      move: (e: PointerEvent) => moveRef.current(e),
+      up: () => endRef.current(),
+    };
+    winHandlersRef.current = h;
+    window.addEventListener("pointermove", h.move, { passive: true });
+    window.addEventListener("pointerup", h.up);
+    window.addEventListener("pointercancel", h.up);
+  }, [detachWindow]);
+
+  const moveRef = useRef<(e: PointerEvent) => void>(() => {});
+  const endRef = useRef<() => void>(() => {});
+
   const onPointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (!enabled) return;
@@ -177,13 +206,13 @@ export function useThumbArc({
       startRef.current = { x: e.clientX, y: e.clientY, offset: offsetRef.current };
       lastProjRef.current = 0;
       samplesRef.current = [{ t: performance.now(), p: 0 }];
-      (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+      attachWindow();
       ensureLoop();
     },
     [enabled, ensureLoop, stopLoop],
   );
 
-  const onPointerMove = useCallback((e: React.PointerEvent) => {
+  const onPointerMove = useCallback((e: React.PointerEvent | PointerEvent) => {
     if (!draggingRef.current) return;
     const dx = e.clientX - startRef.current.x;
     const dy = e.clientY - startRef.current.y;
@@ -205,11 +234,8 @@ export function useThumbArc({
     lastProjRef.current = proj;
   }, []);
 
-  const endDrag = useCallback((e?: React.PointerEvent) => {
-    if (e) {
-      const el = e.currentTarget as HTMLElement | null;
-      if (el?.hasPointerCapture?.(e.pointerId)) el.releasePointerCapture(e.pointerId);
-    }
+  const endDrag = useCallback(() => {
+    detachWindow();
     if (!draggingRef.current) return;
     draggingRef.current = false;
     setIsDragging(false);
@@ -297,13 +323,12 @@ export function useThumbArc({
     [emit, ensureLoop],
   );
 
+  moveRef.current = onPointerMove as (e: PointerEvent) => void;
+  endRef.current = endDrag;
+
   const bind = {
     ref: elRef,
     onPointerDown,
-    onPointerMove,
-    onPointerUp: endDrag,
-    onPointerCancel: endDrag,
-    onPointerLeave: endDrag,
     style: { touchAction: "none" as const },
   };
 
