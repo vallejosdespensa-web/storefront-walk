@@ -35,7 +35,6 @@ export function Aisle({
 
   useEffect(() => {
     setActive(0);
-    cardsRef.current.clear();
   }, [node.id]);
 
   const onFrame = useCallback((offset: number) => {
@@ -44,11 +43,14 @@ export function Aisle({
       const ap = Math.abs(pos);
       el.style.transform = `translate3d(${pos * 0.16}px, ${pos}px, ${-ap * 1.15}px) rotateY(${16 - pos * 0.028}deg)`;
       el.style.opacity = `${Math.max(0, 1 - ap / 560)}`;
+      el.style.zIndex = `${1000 - Math.round(ap)}`;
+      el.style.pointerEvents = ap > 300 ? "none" : "auto";
       el.style.filter = ap > 120 ? `blur(${Math.min(3.5, (ap - 120) / 90)}px)` : "none";
+
     });
   }, []);
 
-  const { bind, scrollToIndex } = useThumbArc({
+  const { bind, scrollToIndex, paint } = useThumbArc({
     count: children.length,
     step: STEP,
     axis: { x: -0.3, y: 1 },
@@ -63,6 +65,10 @@ export function Aisle({
     },
     onEscape: onExit,
   });
+
+  useEffect(() => {
+    paint();
+  }, [node.id, children.length, paint]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -125,9 +131,11 @@ export function Aisle({
                 if (el) cardsRef.current.set(i, el);
                 else cardsRef.current.delete(i);
               }}
-              className={`absolute left-0 top-[-34px] h-[68px] w-full rounded-md bg-panel px-3 py-2 will-change-transform ${i === active ? "glow-active" : ""}`}
+              onClick={() => (i === active ? onEnterChild(c) : scrollToIndex(i))}
+              className={`absolute left-0 top-[-34px] h-[68px] w-full cursor-pointer rounded-md bg-panel px-3 py-2 will-change-transform ${i === active ? "glow-active" : ""}`}
               style={{ transformStyle: "preserve-3d" }}
             >
+
               <p className="truncate text-sm text-scene-fg">{c.name}</p>
               <p className="text-[11px] text-scene-dim">
                 {c.children?.length ? `${c.children.length} subcategorías` : "Ver marcas"}
