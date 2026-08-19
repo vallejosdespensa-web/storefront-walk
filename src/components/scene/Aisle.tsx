@@ -125,9 +125,11 @@ export function Aisle({
                 if (el) cardsRef.current.set(i, el);
                 else cardsRef.current.delete(i);
               }}
-              className={`absolute left-0 top-[-34px] h-[68px] w-full rounded-md bg-panel px-3 py-2 will-change-transform ${i === active ? "glow-active" : ""}`}
+              onClick={() => (i === active ? onEnterChild(c) : scrollToIndex(i))}
+              className={`absolute left-0 top-[-34px] h-[68px] w-full cursor-pointer rounded-md bg-panel px-3 py-2 will-change-transform ${i === active ? "glow-active" : ""}`}
               style={{ transformStyle: "preserve-3d" }}
             >
+
               <p className="truncate text-sm text-scene-fg">{c.name}</p>
               <p className="text-[11px] text-scene-dim">
                 {c.children?.length ? `${c.children.length} subcategorías` : "Ver marcas"}
