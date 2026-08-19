@@ -67,6 +67,10 @@ export function Aisle({
   });
 
   useEffect(() => {
+    paint();
+  }, [node.id, children.length, paint]);
+
+  useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "ArrowDown") scrollToIndex(active + 1);
       if (e.key === "ArrowUp") scrollToIndex(active - 1);
